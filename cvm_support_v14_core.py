@@ -4,14 +4,19 @@ Created on Wed Nov 15 13:28:50 2017
 
 @author: Daniel Mattos
 """
-from selenium.common.exceptions import NoSuchElementException
+
+import sys
+sys.path.append('/usr/local/lib/python2.7/dist-packages')
+
 from statsmodels.tsa.seasonal import seasonal_decompose
-from pandas_datareader import data as pdr
+import matplotlib
+matplotlib.use("Agg")
+
 from datetime import datetime, timedelta
 import matplotlib.pyplot as plt
-from selenium import webdriver
-import fix_yahoo_finance as yf
-from bs4 import BeautifulSoup
+
+
+
 import pandas as pd
 import numpy as np
 import pickle
@@ -41,6 +46,10 @@ dateDic = {
     '01/10': 3,
     '31/12': 4
 }
+
+### Closest Date to a Given Date ###
+def nearest(items, pivot):
+    return min(items, key=lambda x: abs(x - pivot))
 
 ### Convert BR Date With Slash to Standard Format With Dash ###
 def convert_date(BR_Date):
@@ -87,7 +96,7 @@ def check_DF_items_consistency(series):
 
 ### Replace Text According to Dictionary ###
 def multipleReplace(text, wordDict):
-    
+
     for key in wordDict:
         try:
             text = text.replace(key, wordDict[key])
@@ -139,11 +148,11 @@ def get_Q_Account_IS(series,date,index=[],dic=[]):
                     elif period>1:
                         return get_Combo_Account_by_Index(series.DF[i].IS,index)[1]-get_Combo_Account_by_Index(series.DF[i+1].IS,index)[2]
     except KeyError:
-        return 0       
+        return 0
     except TypeError:
         return 0
     return None
-    
+
 ### Get Quarterly Result for Specified Accounts and Date in the CF ###
 def get_Q_Account_CF(series,date,index=[],dic=[]):
     try:
@@ -178,7 +187,7 @@ def get_Q_Account_CF(series,date,index=[],dic=[]):
                     elif period>1:
                         return get_Combo_Account_by_Index(series.DF[i].CF,index)[1]-get_Combo_Account_by_Index(series.DF[i+1].CF,index)[1]
     except KeyError:
-        return 0        
+        return 0
     except TypeError:
         return 0
     return None
@@ -255,7 +264,7 @@ def get_Q_EBITDA(series):
         except TypeError:
             EBITDA = None
         except IndexError:
-            EBITDA = None      
+            EBITDA = None
     df = pd.DataFrame(np.array(l).reshape(int(len(l)/2),2), columns = ['Date','EBITDA']).iloc[::-1]
     df.set_index('Date',inplace=True)
     df['EBITDA']=pd.to_numeric(df['EBITDA']).round(2)
@@ -291,7 +300,7 @@ def get_Q_EBITDA_Release_Date(series):
         except TypeError:
             EBITDA = None
         except IndexError:
-            EBITDA = None    
+            EBITDA = None
     df = pd.DataFrame(np.array(l).reshape(int(len(l)/2),2), columns = ['Date','EBITDA']).iloc[::-1]
     df.set_index('Date',inplace=True)
     df['EBITDA']=pd.to_numeric(df['EBITDA']).round(2)
@@ -308,7 +317,7 @@ def get_Q_Revenue(series):
         except TypeError:
             Revenue = None
         except IndexError:
-            Revenue = None      
+            Revenue = None
     df = pd.DataFrame(np.array(l).reshape(int(len(l)/2),2), columns = ['Date','Revenue']).iloc[::-1]
     df.set_index('Date',inplace=True)
     df['Revenue']=pd.to_numeric(df['Revenue']).round(2)
@@ -325,7 +334,7 @@ def get_Q_Revenue_Release_Date(series):
         except TypeError:
             Revenue = None
         except IndexError:
-            Revenue = None    
+            Revenue = None
     df = pd.DataFrame(np.array(l).reshape(int(len(l)/2),2), columns = ['Date','Revenue']).iloc[::-1]
     df.set_index('Date',inplace=True)
     df['Revenue']=pd.to_numeric(df['Revenue']).round(2)
@@ -360,7 +369,7 @@ def get_Q_COGS(series):
         except TypeError:
             COGS = None
         except IndexError:
-            COGS = None      
+            COGS = None
     df = pd.DataFrame(np.array(l).reshape(int(len(l)/2),2), columns = ['Date','COGS']).iloc[::-1]
     df.set_index('Date',inplace=True)
     df['COGS']=pd.to_numeric(df['COGS']).round(2)
@@ -377,7 +386,7 @@ def get_Q_COGS_Release_Date(series):
         except TypeError:
             COGS = None
         except IndexError:
-            COGS = None    
+            COGS = None
     df = pd.DataFrame(np.array(l).reshape(int(len(l)/2),2), columns = ['Date','COGS']).iloc[::-1]
     df.set_index('Date',inplace=True)
     df['COGS']=pd.to_numeric(df['COGS']).round(2)
@@ -412,7 +421,7 @@ def get_Q_SGA_Other(series):
         except TypeError:
             SGA_Other = None
         except IndexError:
-            SGA_Other = None      
+            SGA_Other = None
     df = pd.DataFrame(np.array(l).reshape(int(len(l)/2),2), columns = ['Date','SGA_Other']).iloc[::-1]
     df.set_index('Date',inplace=True)
     df['SGA_Other']=pd.to_numeric(df['SGA_Other']).round(2)
@@ -429,7 +438,7 @@ def get_Q_SGA_Other_Release_Date(series):
         except TypeError:
             SGA_Other = None
         except IndexError:
-            SGA_Other = None    
+            SGA_Other = None
     df = pd.DataFrame(np.array(l).reshape(int(len(l)/2),2), columns = ['Date','SGA_Other']).iloc[::-1]
     df.set_index('Date',inplace=True)
     df['SGA_Other']=pd.to_numeric(df['SGA_Other']).round(2)
@@ -464,7 +473,7 @@ def get_Q_EBIT(series):
         except TypeError:
             EBIT = None
         except IndexError:
-            EBIT = None      
+            EBIT = None
     df = pd.DataFrame(np.array(l).reshape(int(len(l)/2),2), columns = ['Date','EBIT']).iloc[::-1]
     df.set_index('Date',inplace=True)
     df['EBIT']=pd.to_numeric(df['EBIT']).round(2)
@@ -481,7 +490,7 @@ def get_Q_EBIT_Release_Date(series):
         except TypeError:
             EBIT = None
         except IndexError:
-            EBIT = None    
+            EBIT = None
     df = pd.DataFrame(np.array(l).reshape(int(len(l)/2),2), columns = ['Date','EBIT']).iloc[::-1]
     df.set_index('Date',inplace=True)
     df['EBIT']=pd.to_numeric(df['EBIT']).round(2)
@@ -516,7 +525,7 @@ def get_Q_Earnings(series):
         except TypeError:
             Earnings = None
         except IndexError:
-            Earnings = None      
+            Earnings = None
     df = pd.DataFrame(np.array(l).reshape(int(len(l)/2),2), columns = ['Date','Earnings']).iloc[::-1]
     df.set_index('Date',inplace=True)
     df['Earnings']=pd.to_numeric(df['Earnings']).round(2)
@@ -533,7 +542,7 @@ def get_Q_Earnings_Release_Date(series):
         except TypeError:
             Earnings = None
         except IndexError:
-            Earnings = None    
+            Earnings = None
     df = pd.DataFrame(np.array(l).reshape(int(len(l)/2),2), columns = ['Date','Earnings']).iloc[::-1]
     df.set_index('Date',inplace=True)
     df['Earnings']=pd.to_numeric(df['Earnings']).round(2)
@@ -568,7 +577,7 @@ def get_Q_Financial(series):
         except TypeError:
             Financial = None
         except IndexError:
-            Financial = None      
+            Financial = None
     df = pd.DataFrame(np.array(l).reshape(int(len(l)/2),2), columns = ['Date','Financial']).iloc[::-1]
     df.set_index('Date',inplace=True)
     df['Financial']=pd.to_numeric(df['Financial']).round(2)
@@ -585,7 +594,7 @@ def get_Q_Financial_Release_Date(series):
         except TypeError:
             Financial = None
         except IndexError:
-            Financial = None    
+            Financial = None
     df = pd.DataFrame(np.array(l).reshape(int(len(l)/2),2), columns = ['Date','Financial']).iloc[::-1]
     df.set_index('Date',inplace=True)
     df['Financial']=pd.to_numeric(df['Financial']).round(2)
@@ -624,7 +633,7 @@ def get_Q_FCFF(series):
                 t = 0
             FCFF =  get_Q_Account_CF(series,i.filing_date,index=['6.01'])\
                     +I*(1-t)\
-                    +get_Q_Account_CF(series,i.filing_date,index=['6.02'])  
+                    +get_Q_Account_CF(series,i.filing_date,index=['6.02'])
             l.append(i.filing_date)
             l.append(FCFF)
         except TypeError:
@@ -651,13 +660,13 @@ def get_Q_FCFF_Release_Date(series):
                 t = 0
             FCFF =  get_Q_Account_CF(series,i.filing_date,index=['6.01'])\
                     +I*(1-t)\
-                    +get_Q_Account_CF(series,i.filing_date,index=['6.02'])  
+                    +get_Q_Account_CF(series,i.filing_date,index=['6.02'])
             l.append(i.delivery_date[0:10])
             l.append(FCFF)
         except TypeError:
             FCFF = None
         except IndexError:
-            FCFF = None 
+            FCFF = None
     df = pd.DataFrame(np.array(l).reshape(int(len(l)/2),2), columns = ['Date','FCFF']).iloc[::-1]
     df.set_index('Date',inplace=True)
     df['FCFF']=pd.to_numeric(df['FCFF']).round(2)
@@ -756,7 +765,7 @@ def get_Q_EV_Bridge_Release_Date(series):
         except TypeError:
             EV_Bridge = None
         except IndexError:
-            EV_Bridge = None    
+            EV_Bridge = None
     df = pd.DataFrame(np.array(l).reshape(int(len(l)/2),2), columns = ['Date','EV_Bridge']).iloc[::-1]
     df.set_index('Date',inplace=True)
     df['EV_Bridge']=pd.to_numeric(df['EV_Bridge']).round(2)
@@ -774,7 +783,7 @@ def get_Q_BV_Release_Date(series):
         except TypeError:
             BV = None
         except IndexError:
-            BV = None    
+            BV = None
     df = pd.DataFrame(np.array(l).reshape(int(len(l)/2),2), columns = ['Date','Book_Value']).iloc[::-1]
     df.set_index('Date',inplace=True)
     df['Book_Value']=pd.to_numeric(df['Book_Value']).round(2)
@@ -797,7 +806,17 @@ def get_Q_Market_Cap_Release_Date(series):
         except TypeError:
             Market_Cap = None
         except IndexError:
-            Market_Cap = None    
+            Market_Cap = None
+        except KeyError:
+            date = convert_date(i.delivery_date[0:10])
+            date = nearest(series.common_prices.index,datetime.strptime(date,'%Y-%m-%d'))
+            if series.ticker_preferred==None:
+                Market_Cap = i.common_shares*series.common_prices['Close'][date]/1000
+            else:
+                Market_Cap = (i.common_shares*series.common_prices['Close'][date]\
+                +i.preferred_shares*series.preferred_prices['Close'][date])/1000
+            l.append(i.delivery_date[0:10])
+            l.append(Market_Cap)
     df = pd.DataFrame(np.array(l).reshape(int(len(l)/2),2), columns = ['Date','Market_Cap']).iloc[::-1]
     df.set_index('Date',inplace=True)
     df['Market_Cap']=pd.to_numeric(df['Market_Cap']).round(2)
@@ -834,8 +853,9 @@ def series_Plot(method, series, multiple = False):
     plt.xticks(x[::2], short_date[::2])
     ax.plot(x,y, label='Data', marker='o')
     ax.plot(x,y_mean, label='Mean', linestyle='--')
-    ax.legend(loc='upper right')    
+    ax.legend(loc='upper right')
     plt.show()
+    fig.savefig("graph.png")
 
 ### Summary of Valuation Estimates ###
 def series_Val(series, wacc=0.12, inflation = 0.045, real_growth = 0.02):
@@ -880,15 +900,15 @@ def series_Val(series, wacc=0.12, inflation = 0.045, real_growth = 0.02):
     print('LTM FCFF + zero growth           Common: %.2f' % (ltm_no_real_growth*rc), end=' | ')
     print('Pref: %.2f' % (ltm_no_real_growth*rp))
     print('Book value per share             Common: %.2f' % (bvps*rc), end=' | ')
-    print('Pref: %.2f' % (bvps*rp))   
+    print('Pref: %.2f' % (bvps*rp))
     print('**************************************************************')
     print('Average                          Common: %.2f' % (avg*rc), end=' | ')
-    print('Pref: %.2f' % (avg*rp))  
+    print('Pref: %.2f' % (avg*rp))
     print('Current price                    Common: %.2f' % cp, end=' | ')
     print('Pref: %.2f' % pp)
     print('Current EV / EBITDA LTM:                     %.2f x' % e)
-        
-### Load Pre-Saved Object ###    
+
+### Load Pre-Saved Object ###
 def series_Open(file_name):
     with open(file_name +'.pkl', 'rb') as input:
             return pickle.load(input)
@@ -903,7 +923,7 @@ class DFs:
         self.IS = None
         self.CF = None
         self.BS = None
-        
+
 class DFs_Series:
     def __init__(self,ticker_common,ccvm,cnpj,ticker_preferred=None):
         self.DF = list()
@@ -923,7 +943,7 @@ class DFs_Series:
         yf.pdr_override() #Temporary
         self.common_prices = pdr.get_data_yahoo(self.ticker_common+'.SA',start='2010-01-01')
         if self.ticker_preferred != None:
-            self.preferred_prices = pdr.get_data_yahoo(self.ticker_preferred+'.SA',start='2010-01-01')        
+            self.preferred_prices = pdr.get_data_yahoo(self.ticker_preferred+'.SA',start='2010-01-01')
         else:
             self.preferred_prices = 0
     def series_save(self):
