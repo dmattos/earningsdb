@@ -860,14 +860,16 @@ def series_Plot(method, series, multiple = False):
 ### Summary of Valuation Estimates ###
 def series_Val(series, wacc=0.12, inflation = 0.045, real_growth = 0.02):
     cs = series.DF[0].common_shares/1000 #In thousands
-    ps = series.DF[0].preferred_shares/1000 #In thousands
     cp = series.common_prices['Close'].iloc[-1]
-    if ps == None:
-        rc = 1
-    else:
+    if series.ticker_preferred!=None:
+        ps = series.DF[0].preferred_shares/1000 #In thousands
         pp = series.preferred_prices['Close'].iloc[-1]
         rp = 1/(cp/pp*cs+ps)
         rc = 1/(pp/cp*ps+cs)
+    else:
+        pp = 0
+        rp = 0
+        rc = 1/cs
     y = get_Q_FCFF_LTM_Release_Date(series)
     r = get_Q_Revenue_LTM_Release_Date(series).iloc[:,0].values.tolist()
     e = get_Q_EV_EBITDA_Release_Date(series).iloc[-1,0]
