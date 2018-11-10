@@ -20,7 +20,7 @@ import cmd
 import os
 
 class EarningsDBShell(cmd.Cmd):
-    intro = 'Welcome to the EarningsDB shell. Type help or ? to list commands.\n'
+    intro = 'Welcome to the EarningsDB shell. Type help or ? to list commands.\nAll values are in R$ thousands, except per share prices or multiples'
     prompt = '(EarningsDB) '
     file = None
 

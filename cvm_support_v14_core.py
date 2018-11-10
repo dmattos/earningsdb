@@ -884,31 +884,40 @@ def series_Val(series, wacc=0.12, inflation = 0.045, real_growth = 0.02):
     trend_max_growth = (float(f_trend.max())*(1+g)/(wacc-g)-EV_Bridge)
     trend_max_no_growth = (float(f_trend.max())*(1+g_steady_state)/(wacc-g_steady_state)-EV_Bridge)
     trend_avg_growth = (float(f_trend.mean())*(1+g)/(wacc-g)-EV_Bridge)
-    ltm_no_real_growth = ((y.iloc[-1,0])\
+    trend_avg_no_growth = (float(f_trend.mean())*(1+g_steady_state)/(wacc-g_steady_state)-EV_Bridge)
+    ltm_growth = ((y.iloc[-1,0])\
+                        *(1+g)/(wacc - g)\
+                        -EV_Bridge)
+    ltm_no_growth = ((y.iloc[-1,0])\
                         *(1+g_steady_state)/(wacc - g_steady_state)\
                         -EV_Bridge)
     bvps = get_Q_BV_Release_Date(series).iloc[-1,0]
-    avg = sum([trend_max_growth,trend_max_no_growth,trend_avg_growth,ltm_no_real_growth,bvps])/5
+    avg = sum([trend_max_growth,trend_max_no_growth,trend_avg_growth,trend_avg_no_growth,ltm_growth,ltm_no_growth,bvps])/7
+    date = series.common_prices.index[-1].date().__str__()
     print('WACC BRL:       %.1f' % (100*wacc),'%')
     print('Nominal growth: %.1f' % (100*g),'%')
     print('Zero growth:    %.1f' % (100*g_steady_state),'%')
-    print('*************************Valuation****************************')
-    print('Max trend FCFF + growth          Common: %.2f' % (trend_max_growth*rc), end=' | ')
+    print('********************************Valuation*****************************************')
+    print('Maximum trend FCFF w/ actual nominal growth          Common: %.2f' % (trend_max_growth*rc), end=' | ')
     print('Pref: %.2f' % (trend_max_growth*rp))
-    print('Max trend FCFF + zero growth     Common: %.2f' % (trend_max_no_growth*rc), end = ' | ')
+    print('Maximum trend FCFF w/ growth matching inflation      Common: %.2f' % (trend_max_no_growth*rc), end = ' | ')
     print('Pref: %.2f' % (trend_max_no_growth*rp))
-    print('Avg. trend FCFF + growth         Common: %.2f' % (trend_avg_growth*rc), end=' | ')
+    print('Avgerage trend FCFF w/ actual nominal growth         Common: %.2f' % (trend_avg_growth*rc), end=' | ')
     print('Pref: %.2f' % (trend_avg_growth*rp))
-    print('LTM FCFF + zero growth           Common: %.2f' % (ltm_no_real_growth*rc), end=' | ')
-    print('Pref: %.2f' % (ltm_no_real_growth*rp))
-    print('Book value per share             Common: %.2f' % (bvps*rc), end=' | ')
+    print('Avgerage trend FCFF w/ growth matching inflation     Common: %.2f' % (trend_avg_no_growth*rc), end=' | ')
+    print('Pref: %.2f' % (trend_avg_no_growth*rp))
+    print('LTM FCFF w/ actual nominal growth                    Common: %.2f' % (ltm_growth*rc), end=' | ')
+    print('Pref: %.2f' % (ltm_growth*rp))
+    print('LTM FCFF w/ growth matching inflation                Common: %.2f' % (ltm_no_growth*rc), end=' | ')
+    print('Pref: %.2f' % (ltm_no_growth*rp))
+    print('Book value per share                                 Common: %.2f' % (bvps*rc), end=' | ')
     print('Pref: %.2f' % (bvps*rp))
-    print('**************************************************************')
-    print('Average                          Common: %.2f' % (avg*rc), end=' | ')
+    print('**********************************************************************************')
+    print('Average                                              Common: %.2f' % (avg*rc), end=' | ')
     print('Pref: %.2f' % (avg*rp))
-    print('Current price                    Common: %.2f' % cp, end=' | ')
+    print('Current price as of %s                       Common: %.2f' % (date,cp), end=' | ')
     print('Pref: %.2f' % pp)
-    print('Current EV / EBITDA LTM:                     %.2f x' % e)
+    print('Current EV / EBITDA LTM:                                         %.2f x' % e)
 
 ### Load Pre-Saved Object ###
 def series_Open(file_name):
