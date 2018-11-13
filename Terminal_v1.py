@@ -4,16 +4,17 @@ Created on Sat Nov  4 18:53:00 2017
 
 @author: Daniel Mattos
 """
-import cvm_support_v14_core
-from cvm_support_v14_core import series_Open
-from cvm_support_v14_core import get_Q_Revenue
-from cvm_support_v14_core import get_Q_EBITDA
-from cvm_support_v14_core import get_Q_Earnings
-from cvm_support_v14_core import get_Q_Market_Cap_Release_Date
-from cvm_support_v14_core import series_Plot
-from cvm_support_v14_core import series_Val
-from cvm_support_v14_core import DFs_Series
-from cvm_support_v14_core import DFs
+import cvm_support_v15_core
+from cvm_support_v15_core import series_Open
+from cvm_support_v15_core import get_Q_Revenue
+from cvm_support_v15_core import get_Q_EBITDA
+from cvm_support_v15_core import get_Q_Earnings
+from cvm_support_v15_core import get_Q_Market_Cap_Release_Date
+from cvm_support_v15_core import get_Q_FCFF
+from cvm_support_v15_core import series_Plot
+from cvm_support_v15_core import series_Val
+from cvm_support_v15_core import DFs_Series
+from cvm_support_v15_core import DFs
 import pickle
 import time
 import cmd
@@ -63,4 +64,5 @@ if __name__ == '__main__':
     Gerdau = series_Open(os.path.dirname(os.path.realpath(__file__))+'/GGBR3')
     Petrobras = series_Open(os.path.dirname(os.path.realpath(__file__))+'/PETR3')
     Grendene = series_Open(os.path.dirname(os.path.realpath(__file__))+'/GRND3')
+    Vale = series_Open(os.path.dirname(os.path.realpath(__file__))+'/VALE3')
     EarningsDBShell().cmdloop()
