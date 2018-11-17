@@ -65,4 +65,5 @@ if __name__ == '__main__':
     Petrobras = series_Open(os.path.dirname(os.path.realpath(__file__))+'/PETR3')
     Grendene = series_Open(os.path.dirname(os.path.realpath(__file__))+'/GRND3')
     Vale = series_Open(os.path.dirname(os.path.realpath(__file__))+'/VALE3')
+    Ambev = series_Open(os.path.dirname(os.path.realpath(__file__))+'/ABEV3')
     EarningsDBShell().cmdloop()
